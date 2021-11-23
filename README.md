@@ -1,4 +1,4 @@
-# Boise Elections Software
+# Boise High Elections Software
 
 Boise High Election software is a free and open-source Flask plugin made to assist with School Elections. Implementation of the app is simple and can be done with just a couple lines of code.
 

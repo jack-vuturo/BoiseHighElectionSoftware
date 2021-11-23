@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Elections{% endblock %}
+{% block content %}
+<form method="post">
+	<div class="row">
+		<h2>Edit Election</h2>
+    <div class="row-right">
+      <button>Save</button>
+    </div>
+	</div>
+	<label>Election Name</label>
+    <input type="text" name="election-name" value="{{election.name}}" required>
+    <label>Start</label>
+    <input type="datetime-local" id="start-datetime" name="start-datetime" value="{{ election.html_start_date }}" required>
+    <label>End</label>
+    <input type="datetime-local" id="end-datetime" name="end-datetime" value="{{ election.html_end_date }}"  required>
+</form>
+<div class="row">
+  <h3>Races</h3>
+  <div class="row-right">
+    <a href="{{ url_for('boisevotes.new_race', election_id=election.pk_str) }}">
+    <button>New Race</button>
+    </a>
+  </div>
+</div>
+<div class="table-container">
+  <table id="myTable">
+    <tr class="header">
+      <th style="width:60%;">Name</th>
+      <th style="width:10%;">Votes</th>
+      <th style="width:30%;">Actions</th>
+    </tr>
+    {% for race in election.races %}
+    <tr>
+      <td>{{ race.name }}</td>
+      <td>{{ race.votes }}</td>
+      <td>
+        <a href="{{ url_for('boisevotes.edit_race', election_id=election.pk_str, race_id=race.pk_str) }}">
+          <button>Edit Race</button>
+        </a>
+        <button>Remove Race</button>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+  <head>
+    {% block head %}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/election_static/style.css">
+    <title>{% block title %}{{ election.name }} {% endblock %} - Boise Votes</title>
+    {% endblock %}
+  </head>
+  <body class="dashboardbody">
+    <div class="header">
+      <a href="{{ url_for('boisevotes.elections') }}" class="logo">Boise Votes</a>
+      <div class="header-right">
+        <a {% if not fastpass %}class="active"{% endif %} href="{{ url_for('boisevotes.elections') }}">Your Elections</a>
+        <a {% if fastpass %}class="active"{% endif %} href="{{ url_for('boisevotes.fastpass') }}">FastPass</a>
+        <a href="{{ url_for('boisevotes.logout') }}">Logout of {{ user.name }}</a>
+      </div>
+    </div>
+    <div id="content">
+    {% block content %}
+    <div class="tab">
+      <a href="{{ url_for("boisevotes.election_overview", election_id=election.id) }}">
+        <button class="tablinks {% if request.url_rule.endpoint == "boisevotes.election_overview" %}active{% endif %}">Overview</button>
+      </a>
+      <a href="{{ url_for("boisevotes.election_register", election_id=election.id) }}">
+        <button class="tablinks {% if request.url_rule.endpoint == "boisevotes.election_register" %}active{% endif %}">Register Voters</button>
+      </a>
+      <a href="#tab">
+        <button class="tablinks">Print Ballots</button>
+      </a>
+      <a href="{{ url_for("boisevotes.election_check_in", election_id=election.id) }}">
+        <button class="tablinks {% if request.url_rule.endpoint == "boisevotes.election_check_in" %}active{% endif %}">Check-In Voters</button>
+      </a>
+      <a href="{{ url_for("boisevotes.election_scanner", election_id=election.id) }}">
+        <button class="tablinks {% if request.url_rule.endpoint == "boisevotes.election_scanner" %}active{% endif %}">Scan Ballots</button>
+      </a>
+      <a href="{{ url_for("boisevotes.election_results", election_id=election.id) }}">
+        <button class="tablinks {% if request.url_rule.endpoint == "boisevotes.election_results" %}active{% endif %}">Results</button>
+      </a>
+    </div>
+    <div class="tabcontent">
+      {% block tabcontent %}
+      {% endblock %}
+    </div>
+    {% endblock %}
+    </div>
+    {% block footer %}
+    {% endblock %}
+  </body>
+</html>

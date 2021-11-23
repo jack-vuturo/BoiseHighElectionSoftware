@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Elections{% endblock %}
+{% block content %}
+  <h2>Your Elections</h2>
+
+  <input type="text" id="myInput" class="searchInput" onkeyup="myFunction()" placeholder="Find Election" title="Find Election">
+
+  <button class="actionbutton">New Election</button>
+
+  <div class="table-container">
+    <table id="myTable">
+    <tr class="header">
+      <th style="width:20%;">Name</th>
+      <th style="width:20%;">Starts</th>
+      <th style="width:20%;">Ends</th>
+      <th style="width:10%;">Status</th>
+      <th style="width:30%;">Actions</th>
+    </tr>
+    {% for election in elections %}
+    <tr>
+      <td>{{ election.name }}</td>
+      <td>{{ election.readable_start_date }}</td>
+      <td>{{ election.readable_end_date }}</td>
+      <td>{{ election.get_user_status(user) }}</td>
+      <td>
+        <a href="{{ url_for("boisevotes.election_dashboard", election_id=election.pk_str) }}">
+          <button>Dashboard</button>
+        </a>
+        <a href="{{ url_for("boisevotes.edit_election", election_id=election.pk_str) }}">
+          <button>Edit</button>
+        </a>
+        <button>Delete</button>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+
+<script>
+  function myFunction() {
+    var input, filter, table, tr, td, i, txtValue;
+    input = document.getElementById("myInput");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("myTable");
+    tr = table.getElementsByTagName("tr");
+    for (i = 0; i < tr.length; i++) {
+      td = tr[i].getElementsByTagName("td")[0];
+      if (td) {
+        txtValue = td.textContent || td.innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+          tr[i].style.display = "";
+        } else {
+          tr[i].style.display = "none";
+        }
+      }       
+    }
+  }
+  </script>
+{% endblock %}

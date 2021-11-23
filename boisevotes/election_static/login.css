@@ -1,0 +1,79 @@
+body, html {
+  min-height: 100vh;
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.bg-img {
+  display: flex;
+  align-items: center;
+
+  /* The image used */
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("https://www.mlive.com/resizer/0pzLGa1ur8IrdTUpteAtO6A1wsc=/1280x0/smart/cloudfront-us-east-1.images.arcpublishing.com/advancelocal/DRYHQWQPUZFSTMGUCBVBRVULHM.JPG");
+
+  /* Control the height of the image */
+  min-height: 100vh;
+  min-width: 100vw;
+
+  /* Center and scale the image nicely */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+}
+
+/* Add styles to the form container */
+.container {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  right: 0;
+  margin: 20px 50px;
+  max-width: 300px;
+  padding: 16px;
+  border-radius: 20px;
+  background-color: white;
+}
+
+.container p {
+  height: 100%;
+  opacity: 0.5;
+  flex-grow: 1;
+}
+
+/* Full-width input fields */
+  input[type=text], input[type=password] {
+  width: 100%;
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  border: none;
+  background: #f1f1f1;
+}
+
+input[type=text]:focus, input[type=password]:focus {
+  background-color: #ddd;
+  outline: none;
+}
+
+/* Set a style for the submit button */
+.btn {
+  background-color: #f44336;
+  color: white;
+  padding: 16px 20px;
+  margin-bottom: 40px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  opacity: 0.95;
+  border-radius: 15px;
+}
+
+.btn:hover {
+  opacity: 1;
+}

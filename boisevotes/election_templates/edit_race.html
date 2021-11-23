@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Edit {{ race.name }}{% endblock %}
+{% block content %}
+<h2>Edit Election</h2>
+<form method="post">
+  <button type="submit">Save</button>
+  <label>Election Name</label>
+  <input type="text" value="{{ race.name }}" name="race-name" required>
+  <label>Number Of Votes</label>
+  <input type="number" value="{{ race.votes }}" min="1" max="5" name="race-votes" required>
+<h3>Candidates</h3>
+<button type="button" onclick="newCandidate()">Add Candidate</button>
+<div class="table-container">
+  <table id="canidateTable">
+    <tr class="header">
+      <th style="width:80%;">Name</th>
+    </tr>
+    {% for canidate in race.canidates %}
+    <tr>
+      <td>
+        <input placeholder="Candidate Name" name="canidates[]" value="{{ canidate }}"></input>
+      </td>
+    </tr>
+    {% endfor %}
+    <tr>
+      <td>
+        <input placeholder="Candidate Name" name="canidates[]"></input>
+      </td>
+    </tr>
+  </table>
+</div>
+</form>
+
+<script>
+  function newCandidate() {
+    document.getElementById("canidateTable").insertRow().insertCell().innerHTML = '<input placeholder="Candidate Name" name="canidates[]"></input>';
+  }
+</script>
+{% endblock %}

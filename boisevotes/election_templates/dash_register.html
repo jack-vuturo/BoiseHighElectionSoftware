@@ -1,0 +1,78 @@
+{% extends "dash_base.html" %}
+{% block title %} {{ super() }} Overview {% endblock %}
+{% block tabcontent %}
+<h1>Voter Emails</h1>
+<p>Insert every voter's email below:</p>
+<form>
+  <button class="actionbutton" type="button" onclick="newVoter()">Save</button>
+  <button class="actionbutton" type="button" 
+  <button class="actionbutton" type="button" onclick="newVoter()">Add Voter Email</button>
+  <button class="actionbutton" type="button" onclick="openModel()">Insert From Sheet</button>
+  <div class="table-container">
+    <table id="canidateTable">
+      <tr class="header">
+        <th style="width:100%;">Email</th>
+      </tr>
+      <tr>
+        <td>
+          <input placeholder="Voter Email" name="email[]"></input>
+        </td>
+      </tr>
+      {% for email in election.voter_emails %}
+      <tr>
+        <td>
+          <input placeholder="Voter Email" name="email[]" value="{{ email }}"></input>
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+</form>
+{% endblock %}
+{% block footer %}
+<div id="myModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h1>Paste From Sheet Below</h1>
+    <input focus id="excel_data" placeholder="Paste Here" />
+    <button class="actionbutton" type="button" onclick="insertFromSheet()">Insert</button>
+  </div>
+</div>
+<script>
+  var modal = document.getElementById("myModal");
+  var btn = document.getElementById("myBtn");
+  var span = document.getElementsByClassName("close")[0];
+
+  function openModel() {
+    modal.style.display = "block";
+  }
+
+  span.onclick = function() {
+    modal.style.display = "none";
+  }
+
+  window.onclick = function(event) {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  }
+
+  function insertFromSheet() {
+    var data = $('#excel_data').val();
+    var rows = data.split("\n");
+    for(var y in rows) {
+      var cells = rows[y].split("\t");
+      var row = document.getElementById("canidateTable").insertRow(1)
+      for(var x in cells) {
+        row.insertCell().innerHTML = '<input placeholder="Voter Email" name="email[]" value="' + cells[x] + '"></input>';
+      }
+    }
+    modal.style.display = "none";
+  }
+
+  function newVoter() {
+    row = document.getElementById("canidateTable").insertRow(1)
+    row.insertCell().innerHTML = '<input placeholder="Voter Email" name="email[]"></input>';
+  }
+</script>
+{% endblock %}

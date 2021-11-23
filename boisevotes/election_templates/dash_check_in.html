@@ -1,0 +1,74 @@
+{% extends "dash_base.html" %}
+{% block title %} {{ super() }} Overview {% endblock %}
+{% block head %} {{ super() }} 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js">
+</script>
+{% endblock %}
+{% block tabcontent %}
+<h1>Search for Voter</h1>
+<input id="searchVoterInput" class="searchInput" placeholder="Voter Name, Email, FastPass" type="text" onkeyup="search()" />
+<div class="table-container">
+  <table id="voterTable">
+  </table>
+</div>
+{% endblock %}
+{% block footer %}
+<div id="myModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h1>Scan Ballot</h1>
+    <input focus placeholder="Ballot ID"/>
+  </div>
+</div>
+
+<script>
+
+var modal = document.getElementById("myModal");
+var btn = document.getElementById("myBtn");
+var span = document.getElementsByClassName("close")[0];
+
+function openModel() {
+  modal.style.display = "block";
+}
+
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+
+function search() {
+  var term = document.getElementById("searchVoterInput").value;
+  var server_data = [
+    {"q": term}
+  ];
+  $.ajax({
+    type: "POST",
+    url: "{{ url_for('boisevotes.election_check_in', election_id=election.id) }}",
+    data: JSON.stringify(server_data),
+    contentType: "application/json",
+    dataType: 'json',
+    success: function(data) {
+      displayData(data);
+    },
+    error: function(data) {
+      displayData(data);
+    }
+  });
+}
+
+function displayData(data) {
+  var table = document.getElementById("voterTable");
+  table.innerHTML = '<tr class="header"><th style="width:80%;">Email</th><th style="width:20%;"></th></tr>'
+  for (voter in data["voters"]) {
+    row = table.insertRow()
+    row.insertCell().innerHTML = data["voters"][voter];
+    row.insertCell().innerHTML = '<button onclick="openModel()">Check In</button>';
+  }
+}
+</script>
+{% endblock %}

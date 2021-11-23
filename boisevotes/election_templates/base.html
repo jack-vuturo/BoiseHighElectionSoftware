@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+  <head>
+    {% block head %}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/election_static/style.css">
+    <title>{% block title %}{% endblock %} - Boise Votes</title>
+    {% endblock %}
+  </head>
+  <body>
+    <div class="header">
+      <a href="{{ url_for('boisevotes.elections') }}" class="logo">Boise Votes</a>
+      <div class="header-right">
+        <a {% if not fastpass %}class="active"{% endif %} href="{{ url_for('boisevotes.elections') }}">Your Elections</a>
+        <a {% if fastpass %}class="active"{% endif %} href="{{ url_for('boisevotes.fastpass') }}">FastPass</a>
+        <a href="{{ url_for('boisevotes.logout') }}">Logout of {{ user.name }}</a>
+      </div>
+    </div>
+    <div id="content">{% block content %}{% endblock %}</div>
+    <div id="footer">
+      {% block footer %}
+      &copy; Copyright 2021 by Boise High Coding Club.
+      {% endblock %}
+    </div>
+  </body>
+</html>

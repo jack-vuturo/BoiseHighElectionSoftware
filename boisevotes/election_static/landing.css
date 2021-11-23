@@ -1,0 +1,66 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+body, html {
+  height: 100%;
+  margin: 0;
+}
+
+/* The hero image */
+.hero-image {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("https://www.mlive.com/resizer/0pzLGa1ur8IrdTUpteAtO6A1wsc=/1280x0/smart/cloudfront-us-east-1.images.arcpublishing.com/advancelocal/DRYHQWQPUZFSTMGUCBVBRVULHM.JPG");
+  height: 100%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+}
+
+.hero-actions {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 20px;
+}
+
+.hero-text {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding: 20px;
+  color: white;
+}
+
+.hero-text h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 5rem;
+  font-weight: 800;
+  margin: 0;
+}
+
+.hero-text h2 {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 500;
+  font-size: 1.7rem;
+  margin: 0;
+  margin-top: 10px;
+}
+
+button {
+  border: 2px solid #fff;
+  padding: 7px 12px;
+  font-size: 1.3rem;
+  cursor: pointer;
+  border-radius: 10px;
+  background: #f44336;
+  color: white;
+  margin: 2px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+}
+
+h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 800;
+}
