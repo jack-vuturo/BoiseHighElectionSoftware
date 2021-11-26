@@ -5,24 +5,23 @@
 
   <input type="text" id="myInput" class="searchInput" onkeyup="myFunction()" placeholder="Find Election" title="Find Election">
 
-  <button class="actionbutton">New Election</button>
+  <a href="{{ url_for("boisevotes.new_election") }}">
+    <button class="actionbutton">New Election</button>
+  </a>
 
   <div class="table-container">
     <table id="myTable">
     <tr class="header">
-      <th style="width:20%;">Name</th>
-      <th style="width:20%;">Starts</th>
-      <th style="width:20%;">Ends</th>
-      <th style="width:10%;">Status</th>
-      <th style="width:30%;">Actions</th>
+      <th style="width:40%;">Name</th>
+      <th style="width:15%;">Status</th>
+      <th style="width:45%;">Actions</th>
     </tr>
     {% for election in elections %}
     <tr>
-      <td>{{ election.name }}</td>
-      <td>{{ election.readable_start_date }}</td>
-      <td>{{ election.readable_end_date }}</td>
+      <td>{{ election.name }} <div class="subtitle">{{ election.readable_start_date }} - {{ election.readable_end_date }}</div></td>
       <td>{{ election.get_user_status(user) }}</td>
       <td>
+        {% if election.is_admin(user) %}
         <a href="{{ url_for("boisevotes.election_dashboard", election_id=election.pk_str) }}">
           <button>Dashboard</button>
         </a>
@@ -30,6 +29,12 @@
           <button>Edit</button>
         </a>
         <button>Delete</button>
+        {% endif %}
+        {% if election.is_voter(user) %}
+        <a href="{{ url_for("boisevotes.online_ballot", election_id=election.pk_str) }}">
+          <button>Vote</button>
+        </a>
+        {% endif %}
       </td>
     </tr>
     {% endfor %}

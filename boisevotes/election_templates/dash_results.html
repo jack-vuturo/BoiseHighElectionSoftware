@@ -5,36 +5,34 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.0/chart.min.js" integrity="sha512-GMGzUEevhWh8Tc/njS0bDpwgxdCJLQBWG3Z2Ct+JGOpVnEmjvNx6ts4v6A2XJf1HOrtOsfhv3hBKpK9kE5z8AQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 {% endblock %}
 {% block tabcontent %}
-<canvas id="myChart" width="100%" height="40"></canvas>
+{% for chart in charts %}
+<h2>{{chart.title}}</h2>
+<canvas id="{{chart.id}}" width="100%" height="40"></canvas>
+{% endfor %}
 <script>
-const ctx = document.getElementById('myChart').getContext('2d');
-const myChart = new Chart(ctx, {
-    type: 'bar',
+{% for chart in charts %}
+const elm{{chart.id}} = document.getElementById('{{chart.id}}').getContext('2d');
+const cjs{{chart.id}} = new Chart(elm{{chart.id}}, {
+    type: "{{ chart.chart_type }}",
     data: {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-        datasets: [{
-            label: '# of Votes',
-            data: [12, 19, 3, 5, 2, 3],
-            backgroundColor: [
-                'rgba(255, 99, 132, 0.8)',
-                'rgba(54, 162, 235, 0.8)',
-                'rgba(255, 206, 86, 0.8)',
-                'rgba(75, 192, 192, 0.8)',
-                'rgba(153, 102, 255, 0.8)',
-                'rgba(255, 159, 64, 0.8)'
-            ],
-            borderColor: [
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 159, 64, 1)'
-            ],
-            borderWidth: 1
-        }]
+      labels: [{% for label in chart.labels %}
+        "{{ label }}",
+      {% endfor %}],
+      datasets: [
+        {% for dataset in chart.data %}
+        {
+          label: '{{ dataset.name }}',
+          data: [{% for datapoint in dataset.data %}
+            {{ datapoint }},
+          {% endfor %}],
+          borderColor: "{{ dataset.color }}",
+          backgroundColor: "{{ dataset.color }}",
+        },
+        {% endfor %}
+      ]
     },
     options: {
+        responsive: true,
         scales: {
             y: {
                 beginAtZero: true
@@ -42,5 +40,7 @@ const myChart = new Chart(ctx, {
         }
     }
 });
+
+{% endfor %}
 </script>
 {% endblock %}

@@ -1,10 +1,11 @@
 import datetime
-from flask import Blueprint, Flask, redirect, url_for, session, request, render_template, abort, jsonify
+from flask import Blueprint, Flask, redirect, url_for, session, request, render_template, abort, jsonify, flash
 from functools import wraps
 from oauthlib.oauth2 import WebApplicationClient
 from .oauth import GoogleSignIn
 from .db import BoiseElectionsDatabase, pk, Q
 from .passes import bp as passes_bp
+from .charts import ChartJS, ChartDataSet
 
 class BoiseElectionsSoftware:
   bp = Blueprint("boisevotes", __name__, static_folder="election_static", template_folder="election_templates")
@@ -35,16 +36,28 @@ class BoiseElectionsSoftware:
         return redirect(url_for('boisevotes.login', next=request.url))
       else:
         return f(user, *args, **kwargs)
-    return wrapper
+    return wrapper 
   
   def check_user_is(self, position, election, user):
     if position == "admin":
-      pass
+      if not election.is_admin(user):
+        return abort(401)
     elif position == "voter":
-      pass
+      if user.email not in election.voter_emails:
+        return abort(401)
     else:
       pass
-
+  
+  def assign_ballot(self, election, ballot, user):
+    if user.email not in election.voter_emails:
+      raise Exception("user not registered")
+    if election.has_voted(user):
+      raise Exception("user has already voted")
+    ballot.assigned_to = user
+    ballot.save()
+    election.ballots.append(ballot)
+    election.save()
+  
   def add_routes(self):
 
     @self.bp.route("/")
@@ -115,7 +128,6 @@ class BoiseElectionsSoftware:
         managers=[],
         races = [],
         voter_emails = [],
-        ballot_variations=[],
         ballots=[]
       )
       election.save()
@@ -174,6 +186,31 @@ class BoiseElectionsSoftware:
         return redirect(url_for('boisevotes.edit_election', election_id=str(election.pk)))
       else:
         abort(400)
+    
+    @self.bp.route("/boisevotes/election/<string:election_id>/vote", methods=["GET", "POST"])
+    @self.login_required
+    def online_ballot(user, election_id):
+      election = self.db.Election.objects(pk=pk(election_id)).first()
+      if election == None:
+        abort(404)
+      self.check_user_is("voter", election, user)
+      if request.method == "GET":
+        if election.has_voted(user):
+          flash("You have already voted", "info")
+          return redirect(url_for("boisevotes.elections"))
+        return render_template("online_ballot.html", user=user, election=election)
+      elif request.method == "POST":
+        ballot = self.db.Ballot()
+        self.assign_ballot(election, ballot, user)
+        data = {}
+        for race in election.races:
+          vote = {}
+          for i in range(1, race.votes + 1):
+            vote[str(i)] = request.form[f"{race.pk}op{i}"]
+          data[str(race.pk)] = vote
+        ballot.data = data
+        ballot.save()
+        return redirect(url_for("boisevotes.elections"))
       
     @self.bp.route("/boisevotes/election/<string:election_id>/dashboard")
     @self.login_required
@@ -198,8 +235,10 @@ class BoiseElectionsSoftware:
       self.check_user_is("admin", election, user)
       if request.method == "GET":
         return render_template("dash_register.html", user=user, election=election)
-      else:
-        return ""
+      elif request.method == "POST":
+        election.voter_emails = list(filter(lambda val: val != "", request.form.getlist('email[]')))
+        election.save()
+        return redirect(url_for("boisevotes.election_overview", election_id=election.id))
     
     @self.bp.route("/boisevotes/election/<string:election_id>/dashboard/checkin", methods=["GET", "POST"])
     @self.login_required
@@ -211,7 +250,7 @@ class BoiseElectionsSoftware:
       if request.method == "GET":
         return render_template("dash_check_in.html", user=user, election=election)
       else:
-        return jsonify(voters=["23jack.vuturo@boiseschools.net"])
+        return jsonify(voters=election.voter_emails)
     
     @self.bp.route("/boisevotes/election/<string:election_id>/dashboard/scan")
     @self.login_required
@@ -229,5 +268,6 @@ class BoiseElectionsSoftware:
       if election == None:
         abort(404)
       self.check_user_is("admin", election, user)
-      return render_template("dash_results.html", user=user, election=election)
+      charts = election.winner_chart_data()
+      return render_template("dash_results.html", user=user, election=election, charts=charts)
 

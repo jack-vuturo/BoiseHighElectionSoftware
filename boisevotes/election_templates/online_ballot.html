@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}{{ election.name }} Online Ballot {% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for("boisevotes.static", filename="ballot.css") }}">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js">
+</script>
+{% endblock %}
+
+{% block content %}
+<form method="post">
+
+  <button type="submit" class="actionbutton mobile-hidden">Submit Ballot</button>
+  
+  <h2 class="mobile-hidden">{{ election.name }} Online Ballot</h2>
+
+  <div class="online-ballot">
+
+    <div class="ballot-header">
+      <h1>{{ election.name }}</h1>
+      <h2>Online Ballot</h2>
+    </div>
+
+    <div class="ballot-body">
+      {% for race in election.races %}
+      <div class="ballot-voter-section">
+        <h2>{{ race.name }}</h2>
+          {% for candidate in race.canidates %}
+            <div class="bubble-row">
+              <p>{{ candidate }}</p>
+              {% for x in range(1, race.votes + 1) %}
+              <label class="bubble">
+                <input type="radio" name="{{race.pk}}op{{x}}" data-col="{{race.pk}}can{{candidate}}" value="{{ candidate }}">
+                <span class="bubble-fill">{{x}}</span>
+              </label>
+              {% endfor %}
+            </div>
+          {% endfor %}
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="action-area mobile-only">
+      <button type="submit" class="actionbutton">Submit Ballot</button>
+    </div>
+
+  </div>
+
+</form>
+
+<script>
+$("input[type=radio]").click(function() {
+  var col, el;
+  el = $(this);
+  col = el.data("col");
+  $("input[data-col='" + col + "']").prop("checked", false);
+  el.prop("checked", true);
+});
+</script>
+{% endblock %}

@@ -52,6 +52,43 @@ html, body {
   float: right;
 }
 
+.alert {
+  padding: 20px;
+  width: 80vw;
+  border-radius: 10px;
+  background-color: #555;
+  color: white;
+  opacity: 1;
+  transition: 0.6s;
+  margin: 7.5px auto;
+}
+
+/* The close button */
+.alert .closebtn {
+  margin-left: 15px;
+  color: white;
+  font-weight: bold;
+  float: right;
+  font-size: 22px;
+  line-height: 20px;
+  height: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.alert.success {background-color: #04AA6D;}
+.alert.info {background-color: #2196F3;}
+.alert.warning {background-color: #ff9800;}
+.alert.error {
+  border: solid 2px #f44336;
+  background-color: #f4433699;
+}
+
+/* When moving the mouse over the close button */
+.alert .closebtn:hover {
+  opacity: 0.7;
+}
+
 #content {
   padding: 10px 50px 10px;
   position: relative;
@@ -279,6 +316,12 @@ table button:hover {
   width: 100%;
   top: calc(max(100%, 100vh) - 25px);
   left: 0;
+}
+
+.subtitle {
+  font-size: 0.8em;
+  line-height: 1.2em;
+  opacity: 0.7;
 }
 
 @media screen and (max-width: 500px) {

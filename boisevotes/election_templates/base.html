@@ -16,8 +16,29 @@
         <a href="{{ url_for('boisevotes.logout') }}">Logout of {{ user.name }}</a>
       </div>
     </div>
+    {% with messages = get_flashed_messages() %}
+      {% for message in messages %}
+      <div class="alert error">
+        <span class="closebtn">&times;</span>  
+        {{ message }}
+      </div>
+      {% endfor %}
+    {% endwith %}
     <div id="content">{% block content %}{% endblock %}</div>
     <div id="footer">
+      <script>
+      var close = document.getElementsByClassName("closebtn");
+      var i;
+
+      for (i = 0; i < close.length; i++) {
+        close[i].onclick = function(){
+          var div = this.parentElement;
+          div.style.opacity = "0";
+          setTimeout(function(){ div.style.height = "0px"; }, 600);
+          setTimeout(function(){ div.style.display = "none"; }, 600);
+        }
+      }
+      </script>
       {% block footer %}
       &copy; Copyright 2021 by Boise High Coding Club.
       {% endblock %}
