@@ -5,10 +5,9 @@ from oauthlib.oauth2 import WebApplicationClient
 from .oauth import GoogleSignIn
 from .db import BoiseElectionsDatabase, pk, Q
 from .passes import bp as passes_bp
-from .charts import ChartJS, ChartDataSet
 
 class BoiseElectionsSoftware:
-  bp = Blueprint("boisevotes", __name__, static_folder="election_static", template_folder="election_templates")
+  bp = Blueprint("boisevotes", __name__, url_prefix = "/vote", static_folder="election_static", template_folder="election_templates")
   bp.register_blueprint(passes_bp)
   GOOGLE_CLIENT_ID = None
   GOOGLE_CLIENT_SECRET = None
@@ -102,12 +101,12 @@ class BoiseElectionsSoftware:
       session.clear()
       return redirect(url_for("boisevotes.login"))
     
-    @self.bp.route("/boisevotes/pass")
+    @self.bp.route("/pass")
     @self.login_required
     def fastpass(user):
       return render_template("fastpass.html", user=user, fastpass=True)
     
-    @self.bp.route("/boisevotes/elections")
+    @self.bp.route("/elections")
     @self.login_required
     def elections(user):
       elections = self.db.Election.objects(
@@ -117,7 +116,7 @@ class BoiseElectionsSoftware:
       )
       return render_template("elections.html", user=user, elections=elections)
     
-    @self.bp.route("/boisevotes/election/new")
+    @self.bp.route("/election/new")
     @self.login_required
     def new_election(user):
       election = self.db.Election(
@@ -133,7 +132,7 @@ class BoiseElectionsSoftware:
       election.save()
       return redirect(url_for('boisevotes.edit_election', election_id=str(election.pk)))
     
-    @self.bp.route("/boisevotes/election/<string:election_id>/edit", methods=["GET", "POST"])
+    @self.bp.route("/election/<string:election_id>/edit", methods=["GET", "POST"])
     @self.login_required
     def edit_election(user, election_id):
       election = self.db.Election.objects(pk=pk(election_id)).first()
@@ -153,7 +152,7 @@ class BoiseElectionsSoftware:
       else:
         abort(404)
     
-    @self.bp.route("/boisevotes/election/<string:election_id>/race/new", methods=["GET", "POST"])
+    @self.bp.route("/election/<string:election_id>/race/new", methods=["GET", "POST"])
     @self.login_required
     def new_race(user, election_id):
       election = self.db.Election.objects(pk=pk(election_id)).first()
@@ -168,7 +167,7 @@ class BoiseElectionsSoftware:
       election.save()
       return redirect(url_for('boisevotes.edit_race', election_id=str(election.pk), race_id=str(race.pk)))
     
-    @self.bp.route("/boisevotes/election/<string:election_id>/race/<string:race_id>/edit", methods=["GET", "POST"])
+    @self.bp.route("/election/<string:election_id>/race/<string:race_id>/edit", methods=["GET", "POST"])
     @self.login_required
     def edit_race(user, election_id, race_id):
       election = self.db.Election.objects(pk=pk(election_id)).first()
@@ -187,7 +186,7 @@ class BoiseElectionsSoftware:
       else:
         abort(400)
     
-    @self.bp.route("/boisevotes/election/<string:election_id>/vote", methods=["GET", "POST"])
+    @self.bp.route("/election/<string:election_id>/vote", methods=["GET", "POST"])
     @self.login_required
     def online_ballot(user, election_id):
       election = self.db.Election.objects(pk=pk(election_id)).first()
@@ -212,12 +211,12 @@ class BoiseElectionsSoftware:
         ballot.save()
         return redirect(url_for("boisevotes.elections"))
       
-    @self.bp.route("/boisevotes/election/<string:election_id>/dashboard")
+    @self.bp.route("/election/<string:election_id>/dashboard")
     @self.login_required
     def election_dashboard(user, election_id):
       return redirect(url_for("boisevotes.election_overview", election_id=election_id))
       
-    @self.bp.route("/boisevotes/election/<string:election_id>/dashboard/overview")
+    @self.bp.route("/election/<string:election_id>/dashboard/overview")
     @self.login_required
     def election_overview(user, election_id):
       election = self.db.Election.objects(pk=pk(election_id)).first()
@@ -226,7 +225,7 @@ class BoiseElectionsSoftware:
       self.check_user_is("admin", election, user)
       return render_template("dash_overview.html", user=user, election=election)
     
-    @self.bp.route("/boisevotes/election/<string:election_id>/dashboard/register", methods=["GET", "POST"])
+    @self.bp.route("/election/<string:election_id>/dashboard/register", methods=["GET", "POST"])
     @self.login_required
     def election_register(user, election_id):
       election = self.db.Election.objects(pk=pk(election_id)).first()
@@ -240,7 +239,7 @@ class BoiseElectionsSoftware:
         election.save()
         return redirect(url_for("boisevotes.election_overview", election_id=election.id))
     
-    @self.bp.route("/boisevotes/election/<string:election_id>/dashboard/checkin", methods=["GET", "POST"])
+    @self.bp.route("/election/<string:election_id>/dashboard/checkin", methods=["GET", "POST"])
     @self.login_required
     def election_check_in(user, election_id):
       election = self.db.Election.objects(pk=pk(election_id)).first()
@@ -252,7 +251,7 @@ class BoiseElectionsSoftware:
       else:
         return jsonify(voters=election.voter_emails)
     
-    @self.bp.route("/boisevotes/election/<string:election_id>/dashboard/scan")
+    @self.bp.route("/election/<string:election_id>/dashboard/scan")
     @self.login_required
     def election_scanner(user, election_id):
       election = self.db.Election.objects(pk=pk(election_id)).first()
@@ -261,7 +260,7 @@ class BoiseElectionsSoftware:
       self.check_user_is("admin", election, user)
       return render_template("dash_scan.html", user=user, election=election)
     
-    @self.bp.route("/boisevotes/election/<string:election_id>/dashboard/results")
+    @self.bp.route("/election/<string:election_id>/dashboard/results")
     @self.login_required
     def election_results(user, election_id):
       election = self.db.Election.objects(pk=pk(election_id)).first()
@@ -270,4 +269,3 @@ class BoiseElectionsSoftware:
       self.check_user_is("admin", election, user)
       charts = election.winner_chart_data()
       return render_template("dash_results.html", user=user, election=election, charts=charts)
-
