@@ -3,7 +3,7 @@
   <head>
     {% block head %}
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="/election_static/style.css">
+    <link rel="stylesheet" href="{{ url_for('boisevotes.static', filename='style.css') }}">
     <title>{% block title %}{{ election.name }} {% endblock %} - Boise Votes</title>
     {% endblock %}
   </head>
